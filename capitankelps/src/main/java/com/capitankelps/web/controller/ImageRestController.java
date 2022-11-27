@@ -14,7 +14,7 @@ public class ImageRestController {
         QueryResponse qr = new QueryResponse();
         qr.image = "";
         QueryExecutor qe = new QueryExecutor();
-        if(!query.isEmpty()) qr.image = qe.text2Img(query);
+        if(!query.isEmpty()) qr.image = qe.txt2Img(query);
         return qr;
     }
 
