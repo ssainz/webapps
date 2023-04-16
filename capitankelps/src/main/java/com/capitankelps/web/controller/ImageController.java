@@ -33,16 +33,22 @@ public class ImageController {
         model.addAttribute("has_query", !query.isEmpty());
         if(!query.isEmpty()){
             model.addAttribute("query", query);
-            //Thread.sleep(120000);
             // add output of image
-            model.addAttribute("imagebase64",text2ImgFromBackend(query) );
+            QueryResponse qr = text2ImgFromBackend(query);
+            if(qr.busy.equals("true")){
+                model.addAttribute("is_busy", true);
+                model.addAttribute("imagebase64", "");
+            }else{
+                model.addAttribute("imagebase64", qr.image);
+            }
+
 
         }
         return "sb";
     }
 
-    String text2ImgFromBackend(String query){
-        String img = "";
+    QueryResponse text2ImgFromBackend(String query){
+        QueryResponse qr = new QueryResponse();
         if(StringUtils.hasLength(endpoint)){
 
             String uri = endpoint + "/sbbackend?query="+ URLEncoder.encode(query, StandardCharsets.UTF_8);
@@ -56,12 +62,12 @@ public class ImageController {
                 QueryResponse response = client.execute(request, httpResponse ->
                         mapper.readValue(httpResponse.getEntity().getContent(), QueryResponse.class));
 
-                img = response.image;
+                qr = response;
             } catch (IOException e) {
-                img = "";
+                e.printStackTrace();
             }
         }
-        return img;
+        return qr;
     }
 
 
